@@ -281,7 +281,7 @@ except:
     raise
 
 print("")
-print"TEST BENCHMARK RUN RAN SUCCESSFULLY!")
+print("TEST BENCHMARK RUN RAN SUCCESSFULLY!")
 
 EOF
 
