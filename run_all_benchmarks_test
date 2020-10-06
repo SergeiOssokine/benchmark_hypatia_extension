@@ -139,7 +139,7 @@ cd waveform_benchmark
 
 echo "Setting up waveform benchmark"
 mkdir log
-git clone https://git.ligo.org/ian-harry/TD-wf-bench.git 2> log/gitclone.log
+git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2> log/gitclone.log
 cd TD-wf-bench
 # REMOVE THIS LINE
 mv cfgs_vsmall.dat cfgs_small.dat

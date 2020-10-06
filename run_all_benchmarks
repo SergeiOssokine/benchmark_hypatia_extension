@@ -148,7 +148,7 @@ cd waveform_benchmark
 
 echo "Setting up waveform benchmark"
 mkdir log
-git clone https://git.ligo.org/ian-harry/TD-wf-bench.git 2> log/gitclone.log
+git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2> log/gitclone.log
 cd TD-wf-bench
 echo "Running waveform benchmark"
 echo
