@@ -246,7 +246,7 @@ cd ..
 echo "SUMMARIZING"
 echo
 
-/usr/bin/python2.7 - <<EOF
+python - <<EOF
 import numpy
 try:
     pycbc_1A = numpy.loadtxt('pycbc_benchmark/no_hp_perf_num_1.dat')[()]
