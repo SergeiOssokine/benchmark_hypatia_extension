@@ -9,6 +9,19 @@ if [ -z "${2}" ]; then echo "Must supply number of logical cores"; exit 1; fi
 echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES AND $2 VIRTUAL CORES"
 echo
 
+
+mkdir bilby_benchmark
+cd bilby_benchmark
+mkdir log
+
+# SETUP for bilby benchmark
+git clone git@git.ligo.org:serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
+cd bilby_benchmarks
+bash bilby_bechmark.sh $1 $2
+cd ../..
+
+
+
 mkdir pycbc_benchmark
 cd pycbc_benchmark
 mkdir log
