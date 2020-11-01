@@ -15,6 +15,7 @@ cd bilby_benchmark
 mkdir log
 
 # SETUP for bilby benchmark
+cd bilby_benchmark
 git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
 cd bilby_benchmarks
 bash bilby_bechmark.sh $1 $2
