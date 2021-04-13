@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-conda activate igwn-py38
 if [ -z "${1}" ]; then echo "Must supply number of physical cores"; exit 1; fi
 
 if [ -z "${2}" ]; then echo "Must supply number of logical cores"; exit 1; fi
