@@ -10,17 +10,7 @@ echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES AND $2 VIRTUAL CORES"
 echo
 
 
-#mkdir bilby_benchmark
-#cd bilby_benchmark
-#mkdir log
 
-# SETUP for bilby benchmark
-
-#git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
-#cd bilby_benchmarks
-#echo `pwd`
-#bash bilby_benchmark.sh $1 $2
-#cd ../..
 
 
 mkdir waveform_benchmark
@@ -40,6 +30,35 @@ echo
 ./wf_bench_small.sh $2
 echo
 cd ../..
+
+
+
+mkdir PE_benchmarks
+cd PE_benchmarks
+mkdir log
+
+# SETUP for bilby benchmark
+
+git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
+cd bilby_benchmarks
+echo `pwd`
+
+echo "Running bilby benchmark on 1 core"
+cd bilby
+bash run_short_benchmark.sh
+cd ..
+echo "Done running bilby benchmark"
+
+
+cd parallel_bilby
+echo "Setting up the parallel bilby benchmark"
+echo "Running parallel bilby benchmark on ${1} cores"
+bash run_short_benchmark.sh $1
+echo "Done running parallel bilby benchmark"
+cd ..
+
+cd ..
+
 
 mkdir lalinference_benchmark
 cd lalinference_benchmark
