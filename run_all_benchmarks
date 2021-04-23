@@ -191,13 +191,13 @@ except:
 
 
 try:                                                                                                                                                                                                                                                                
-    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_short.dat")                                                                                                                                                                             
+    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_long.dat")                                                                                                                                                                             
     assert bilby>0.                                                                                                                                                                                                                                    
 except:                                                                                                                                                                                                                                                     
     print("CANNOT READ BILBY BENCHMARK. FAILURE")                                                                                                                                                                                                                            
 
 try:                                                                                                                                                                                                                                                               
-    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_short.dat")                                                                                                                                                               
+    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_long.dat")                                                                                                                                                               
     assert pbilby>0.                                                                                                                                                                                                                                           
 except:                                                                                                                                                                                                                                                                      
      print("CANNOT READ PARALLEL BILBY BENCHMARK. FAILURE") 
