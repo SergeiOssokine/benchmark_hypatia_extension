@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+export HDF5_USE_FILE_LOCKING='FALSE'
 if [ -z "${1}" ]; then echo "Must supply number of physical cores"; exit 1; fi
 
 if [ -z "${2}" ]; then echo "Must supply number of logical cores"; exit 1; fi
@@ -34,6 +35,36 @@ echo
 ./wf_bench.sh $2
 echo
 cd ../..
+
+
+
+
+mkdir PE_benchmarks
+cd PE_benchmarks
+mkdir log
+
+# SETUP for bilby benchmark
+
+git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
+cd bilby_benchmarks
+echo `pwd`
+
+echo "Running bilby benchmark on 1 core"
+cd bilby
+bash run_long_benchmark.sh
+cd ..
+echo "Done running bilby benchmark"
+
+
+cd parallel_bilby
+echo "Setting up the parallel bilby benchmark"
+echo "Running parallel bilby benchmark on ${1} cores"
+bash run_long_benchmark.sh $1
+echo "Done running parallel bilby benchmark"
+cd ..
+
+cd ..
+
 
 mkdir lalinference_benchmark
 cd lalinference_benchmark
@@ -107,6 +138,8 @@ cd ..
 done
 wait
 
+
+
 python - <<EOF
 import h5py
 
@@ -124,13 +157,16 @@ EOF
 
 cd ..
 cd ..
+cd ..
+
+
 
 echo "SUMMARIZING"
 echo
 
 python - <<EOF
 import numpy
-
+import sys
 
 try:
 
@@ -144,8 +180,8 @@ except:
     raise
 
 try:
-    lalinference_1 = numpy.loadtxt('lalinference_benchmark/no_hp_benchmark.dat')[()]
-    lalinference_2 = numpy.loadtxt('lalinference_benchmark/w_hp_benchmark.dat')[()]
+    lalinference_1 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/no_hp_benchmark.dat')[()]
+    lalinference_2 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/w_hp_benchmark.dat')[()]
     for val in [lalinference_1, lalinference_2]:
         assert(type(val) == numpy.float64)
         assert(val > 0.)
@@ -153,27 +189,53 @@ except:
     print("CANNOT READ INFERENCE BENCHMARKS. FAILURE")
     raise
 
+
+try:                                                                                                                                                                                                                                                                
+    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_short.dat")                                                                                                                                                                             
+    assert bilby>0.                                                                                                                                                                                                                                    
+except:                                                                                                                                                                                                                                                     
+    print("CANNOT READ BILBY BENCHMARK. FAILURE")                                                                                                                                                                                                                            
+
+try:                                                                                                                                                                                                                                                               
+    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_short.dat")                                                                                                                                                               
+    assert pbilby>0.                                                                                                                                                                                                                                           
+except:                                                                                                                                                                                                                                                                      
+     print("CANNOT READ PARALLEL BILBY BENCHMARK. FAILURE") 
+
+
+
 print("")
 print ("FINAL BENCHMARK FIGURES FOLLOW")
 print("")
 
+
+
+
 norm_waveform = 0.000181422351233672 / 32.
-norm_lalinf = 0.00639 / 32.
+norm_lalinf = 0.00639 / 32
+# bilby runs on 1 core!.
+norm_bilby = 0.00004629629
+norm_pbilby = 0.00003472222/32.
+
+FOM_waveform = max(1./waveform_1, 1./waveform_2) / norm_waveform
+FOM_lalinference = lalinference_1 / norm_lalinf
+FOM_bilby = (1/bilby)/norm_bilby*$1
+FOM_pbilby = (1/pbilby)/norm_pbilby
 
 
-print("FOM_waveform", max(1./waveform_1, 1./waveform_2) / norm_waveform)
-
-print("FOM_lalinference", lalinference_1 / norm_lalinf)
-
+print("FOM_waveform", FOM_waveform)
+print("FOM_lalinference", FOM_lalinference)
+print("FOM_bilby",FOM_bilby)
+print("FOM_pbilby",FOM_pbilby)
 print("")
 print("Also writing figures to RESULTS.dat")
 
-fp = open('RESULTS.dat', 'w')
+with open ('RESULTS.dat', 'w') as fw:
 
-print("FOM_waveform", max(1./waveform_1, 1./waveform_2) / norm_waveform,file=fp)
-
-print("FOM_lalinference", lalinference_1 / norm_lalinf,file=fp)
-
+    fw.write(f"FOM_waveform: {FOM_waveform})
+    fw.write(f"FOM_lalinference: {FOM_lalinference}")
+    fw.write(f"FOM_bilby: {FOM_bilby}")
+    fw.write(f"FOM_pbilby: {FOM_pbilby}")
 
 EOF
 

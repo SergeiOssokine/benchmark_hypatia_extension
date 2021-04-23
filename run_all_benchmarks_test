@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+export HDF5_USE_FILE_LOCKING='FALSE'
 #source /usr/local/bin/conda.sh
 #conda activate igwn-py37
 if [ -z "${1}" ]; then echo "Must supply number of physical cores"; exit 1; fi
@@ -149,6 +150,7 @@ EOF
 
 cd ..
 cd ..
+cd ..
 
 echo "SUMMARIZING"
 echo
@@ -168,14 +170,26 @@ except:
     raise
 
 try:
-    lalinference_1 = numpy.loadtxt('lalinference_benchmark/no_hp_benchmark.dat')[()]
-    lalinference_2 = numpy.loadtxt('lalinference_benchmark/w_hp_benchmark.dat')[()]
+    lalinference_1 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/no_hp_benchmark.dat')[()]
+    lalinference_2 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/w_hp_benchmark.dat')[()]
     for val in [lalinference_1, lalinference_2]:
         assert(type(val) == numpy.float64)
         assert(val > 0.)
 except:
     print ("CANNOT READ INFERENCE BENCHMARKS. FAILURE")
     raise
+
+try:
+    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_short.dat")
+    assert bilby>0.
+except:
+    print("CANNOT READ BILBY BENCHMARK. FAILURE")
+
+
+try:                                                                                                                                                                                                                                                                           
+    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_short.dat")
+    assert pbilby>0.
+except:                                                                                                                                                                                                                                                                           print("CANNOT READ PARALLEL BILBY BENCHMARK. FAILURE") 
 
 print("")
 print("TEST BENCHMARK RUN RAN SUCCESSFULLY!")
