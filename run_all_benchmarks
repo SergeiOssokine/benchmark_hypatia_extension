@@ -219,8 +219,8 @@ norm_pbilby = 0.00003472222/32.
 
 FOM_waveform = max(1./waveform_1, 1./waveform_2) / norm_waveform
 FOM_lalinference = lalinference_1 / norm_lalinf
-FOM_bilby = (1/bilby)/norm_bilby*$1
-FOM_pbilby = (1/pbilby)/norm_pbilby
+FOM_bilby = bilby/norm_bilby*$1
+FOM_pbilby = pbilby/norm_pbilby
 
 
 print("FOM_waveform", FOM_waveform)
