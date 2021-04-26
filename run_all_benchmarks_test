@@ -44,9 +44,9 @@ git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_c
 cd bilby_benchmarks
 echo `pwd`
 
-echo "Running bilby benchmark on 1 core"
+echo "Running bilby benchmark  on 1 core, $1 runs in parallel"
 cd bilby
-bash run_short_benchmark.sh
+bash run_short_benchmark.sh $1
 cd ..
 echo "Done running bilby benchmark"
 
