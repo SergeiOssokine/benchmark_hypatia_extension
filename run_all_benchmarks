@@ -196,7 +196,7 @@ print("Also writing figures to RESULTS.dat")
 
 with open ('RESULTS.dat', 'w') as fw:
 
-    fw.write(f"FOM_waveform: {FOM_waveform})
+    fw.write(f"FOM_waveform: {FOM_waveform}")
     fw.write(f"FOM_lalinference: {FOM_lalinference}")
     fw.write(f"FOM_bilby: {FOM_bilby}")
     fw.write(f"FOM_pbilby: {FOM_pbilby}")
