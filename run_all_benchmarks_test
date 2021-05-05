@@ -7,23 +7,20 @@ conda activate igwn-py38-proposed
 export HDF5_USE_FILE_LOCKING='FALSE'
 #source /usr/local/bin/conda.sh
 #conda activate igwn-py37
-if [ -z "${1}" ]; then echo "Must supply number of physical cores"; exit 1; fi
+if [ -z "${1}" ]; then
+    echo "Must supply number of physical cores"
+    exit 1
+fi
 
-if [ -z "${2}" ]; then echo "Must supply number of logical cores"; exit 1; fi
-
-echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES AND $2 VIRTUAL CORES"
+echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES"
 echo
-
-
-
-
 
 mkdir waveform_benchmark
 cd waveform_benchmark
 
 echo "Setting up waveform benchmark"
 mkdir log
-git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2> log/gitclone.log
+git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2>log/gitclone.log
 cd TD-wf-bench
 # REMOVE THIS LINE
 mv cfgs_vsmall.dat cfgs_small.dat
@@ -32,11 +29,7 @@ echo
 # REMOVE SMALL FOR THE FULL BENCHMARK
 ./wf_bench_small.sh $1
 echo
-./wf_bench_small.sh $2
-echo
 cd ../..
-
-
 
 mkdir PE_benchmarks
 cd PE_benchmarks
@@ -44,16 +37,15 @@ mkdir log
 
 # SETUP for bilby benchmark
 
-git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
+git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git >log/git_clone.log
 cd bilby_benchmarks
-echo `pwd`
+echo $(pwd)
 
 echo "Running bilby benchmark  on 1 core, $1 runs in parallel"
 cd bilby
 bash run_short_benchmark.sh $1
 cd ..
 echo "Done running bilby benchmark"
-
 
 cd parallel_bilby
 echo "Setting up the parallel bilby benchmark"
@@ -63,7 +55,6 @@ echo "Done running parallel bilby benchmark"
 cd ..
 
 cd ..
-
 
 mkdir lalinference_benchmark
 cd lalinference_benchmark
@@ -96,10 +87,10 @@ mkdir TEST_${1}
 cd TEST_${1}
 
 for IDX in $(seq 1 ${1}); do
-mkdir RUN_${IDX}
-cd RUN_${IDX}
-{ time lalinference_bench --psdlength 1024 --psdstart 441416535.0 --seglen 32 --srate 4096.0 --trigtime 441417609 --ifo H1 --H1-channel H1:LDAS-STRAIN --H1-cache LALSimAdLIGO --dataseed 1324 --chirpmass-max 6.170374 --chirpmass-min 3.346569 --q-min 0.125 --comp-max 21.9986477179 --comp-min 1.49140053129 --disable-spin --amporder 0 --fref 100 --inj ../../injections.xml --event 0 --H1-timeslide 0 --trigtime 441417609 --psdstart 441416535.0 --tol 1.0 --H1-flow 20.0 --H1-fhigh 2047.96875 --ntemps 8 --np 8 --nsteps 1 --skip 100 --approx IMRPhenomPv2pseudoFourPN --outfile samples.hdf5  --randomseed 1829391048 --L1-flow 20.0  --V1-timeslide 0 --V1-cache LALSimAdVirgo  --L1-channel L1:LDAS-STRAIN --L1-fhigh 2047.96875 --V1-channel V1:h_16384Hz --V1-fhigh 2047.96875  --V1-flow 20.0 --L1-cache LALSimAdLIGO --L1-timeslide 0 --ifo V1 --ifo L1 --no-detector-frame --Niter ${NSTEPS} &> logging; } 2> runtime &
-cd ..
+    mkdir RUN_${IDX}
+    cd RUN_${IDX}
+    { time lalinference_bench --psdlength 1024 --psdstart 441416535.0 --seglen 32 --srate 4096.0 --trigtime 441417609 --ifo H1 --H1-channel H1:LDAS-STRAIN --H1-cache LALSimAdLIGO --dataseed 1324 --chirpmass-max 6.170374 --chirpmass-min 3.346569 --q-min 0.125 --comp-max 21.9986477179 --comp-min 1.49140053129 --disable-spin --amporder 0 --fref 100 --inj ../../injections.xml --event 0 --H1-timeslide 0 --trigtime 441417609 --psdstart 441416535.0 --tol 1.0 --H1-flow 20.0 --H1-fhigh 2047.96875 --ntemps 8 --np 8 --nsteps 1 --skip 100 --approx IMRPhenomPv2pseudoFourPN --outfile samples.hdf5 --randomseed 1829391048 --L1-flow 20.0 --V1-timeslide 0 --V1-cache LALSimAdVirgo --L1-channel L1:LDAS-STRAIN --L1-fhigh 2047.96875 --V1-channel V1:h_16384Hz --V1-fhigh 2047.96875 --V1-flow 20.0 --L1-cache LALSimAdLIGO --L1-timeslide 0 --ifo V1 --ifo L1 --no-detector-frame --Niter ${NSTEPS} &>logging; } 2>runtime &
+    cd ..
 done
 wait
 
@@ -119,40 +110,6 @@ fp.close()
 EOF
 
 cd ..
-
-echo "Running test on $2 cores"
-echo
-# This line is important! Without it some parts of the job can unexpectedly start using multiple threads!
-export OMP_NUM_THREADS=1
-TIMEFORMAT=%R
-
-mkdir TEST_${2}
-cd TEST_${2}
-
-for IDX in $(seq 1 ${2}); do
-mkdir RUN_${IDX}
-cd RUN_${IDX}
-{ time lalinference_bench --psdlength 1024 --psdstart 441416535.0 --seglen 32 --srate 4096.0 --trigtime 441417609 --ifo H1 --H1-channel H1:LDAS-STRAIN --H1-cache LALSimAdLIGO --dataseed 1324 --chirpmass-max 6.170374 --chirpmass-min 3.346569 --q-min 0.125 --comp-max 21.9986477179 --comp-min 1.49140053129 --disable-spin --amporder 0 --fref 100 --inj ../../injections.xml --event 0 --H1-timeslide 0 --trigtime 441417609 --psdstart 441416535.0 --tol 1.0 --H1-flow 20.0 --H1-fhigh 2047.96875 --ntemps 8 --np 8 --nsteps 1 --skip 100 --approx IMRPhenomPv2pseudoFourPN --outfile samples.hdf5  --randomseed 1829391048 --L1-flow 20.0  --V1-timeslide 0 --V1-cache LALSimAdVirgo  --L1-channel L1:LDAS-STRAIN --L1-fhigh 2047.96875 --V1-channel V1:h_16384Hz --V1-fhigh 2047.96875  --V1-flow 20.0 --L1-cache LALSimAdLIGO --L1-timeslide 0 --ifo V1 --ifo L1 --no-detector-frame --Niter ${NSTEPS} &> logging; } 2> runtime &
-cd ..
-done
-wait
-
-python - <<EOF
-import h5py
-
-total_work = 0
-for i in range(int(${2})):
-    time=open('RUN_{}/runtime'.format(i+1),'r')
-    runtime=float(time.readline())
-    total_work += 1./runtime
-
-fp = open('../w_hp_benchmark.dat', 'w')
-print(total_work,file=fp)
-fp.close()
-
-EOF
-
-cd ..
 cd ..
 cd ..
 
@@ -165,8 +122,7 @@ import numpy
 try:
 
     waveform_1 = numpy.loadtxt("waveform_benchmark/TD-wf-bench/benchmark_${1}.dat")[()]
-    waveform_2 = numpy.loadtxt("waveform_benchmark/TD-wf-bench/benchmark_${2}.dat")[()]
-    for val in [waveform_1, waveform_2]:
+    for val in [waveform_1]:
         assert(type(val) == numpy.float64)
         assert(val > 0.)
 except:
@@ -175,8 +131,7 @@ except:
 
 try:
     lalinference_1 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/no_hp_benchmark.dat')[()]
-    lalinference_2 = numpy.loadtxt('PE_benchmarks/lalinference_benchmark/w_hp_benchmark.dat')[()]
-    for val in [lalinference_1, lalinference_2]:
+    for val in [lalinference_1]:
         assert(type(val) == numpy.float64)
         assert(val > 0.)
 except:
@@ -199,4 +154,3 @@ print("")
 print("TEST BENCHMARK RUN RAN SUCCESSFULLY!")
 
 EOF
-

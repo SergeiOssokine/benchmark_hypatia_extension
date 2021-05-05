@@ -4,70 +4,62 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate igwn-py38-proposed
 
 export HDF5_USE_FILE_LOCKING='FALSE'
-if [ -z "${1}" ]; then echo "Must supply number of physical cores"; exit 1; fi
+if [ -z "${1}" ]; then
+    echo "Must supply number of physical cores"
+    exit 1
+fi
 
-if [ -z "${2}" ]; then echo "Must supply number of logical cores"; exit 1; fi
-
-echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES AND $2 VIRTUAL CORES"
+echo "RUNNING BENCHMARK WITH $1 PHYSICAL CORES"
 echo
 
 mkdir system_details
 cd system_details
-lscpu &> cpu.dat
-head -n1 /proc/meminfo &> memsize.dat
-ls /dev/disk/by-id | grep -v -- -part &> disks.dat
-cat /etc/os-release &> os.dat
-uname -rm &> kernel.dat
+lscpu &>cpu.dat
+head -n1 /proc/meminfo &>memsize.dat
+ls /dev/disk/by-id | grep -v -- -part &>disks.dat
+cat /etc/os-release &>os.dat
+uname -rm &>kernel.dat
 cd ..
-
-
 
 mkdir waveform_benchmark
 cd waveform_benchmark
 
 echo "Setting up waveform benchmark"
 mkdir log
-git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2> log/gitclone.log
+git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2>log/gitclone.log
 cd TD-wf-bench
 echo "Running waveform benchmark"
 echo
-# REMOVE SMALL FOR THE FULL BENCHMARK
+
 ./wf_bench.sh $1
 echo
-./wf_bench.sh $2
-echo
 cd ../..
-
-
-
 
 mkdir PE_benchmarks
 cd PE_benchmarks
 mkdir log
 
-# SETUP for bilby benchmark
-
-git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git > log/git_clone.log
+git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git >log/git_clone.log
 cd bilby_benchmarks
-echo `pwd`
+echo $(pwd)
 
+# Bilby
 echo "Running bilby benchmark on 1 core, $1 runs in parallel"
 cd bilby
 bash run_long_benchmark.sh $1
 cd ..
 echo "Done running bilby benchmark"
 
-
+# Parallel bilby
 cd parallel_bilby
 echo "Setting up the parallel bilby benchmark"
 echo "Running parallel bilby benchmark on ${1} cores"
 bash run_long_benchmark.sh $1
 echo "Done running parallel bilby benchmark"
 cd ..
-
 cd ..
 
-
+# LALInference
 mkdir lalinference_benchmark
 cd lalinference_benchmark
 echo "Setting up lalinference benchmark"
@@ -99,10 +91,10 @@ mkdir TEST_${1}
 cd TEST_${1}
 
 for IDX in $(seq 1 ${1}); do
-mkdir RUN_${IDX}
-cd RUN_${IDX}
-{ time lalinference_bench --psdlength 1024 --psdstart 441416535.0 --seglen 32 --srate 4096.0 --trigtime 441417609 --ifo H1 --H1-channel H1:LDAS-STRAIN --H1-cache LALSimAdLIGO --dataseed 1324 --chirpmass-max 6.170374 --chirpmass-min 3.346569 --q-min 0.125 --comp-max 21.9986477179 --comp-min 1.49140053129 --disable-spin --amporder 0 --fref 100 --inj ../../injections.xml --event 0 --H1-timeslide 0 --trigtime 441417609 --psdstart 441416535.0 --tol 1.0 --H1-flow 20.0 --H1-fhigh 2047.96875 --ntemps 8 --np 8 --nsteps 1 --skip 100 --approx IMRPhenomPv2pseudoFourPN --outfile samples.hdf5  --randomseed 1829391048 --L1-flow 20.0  --V1-timeslide 0 --V1-cache LALSimAdVirgo  --L1-channel L1:LDAS-STRAIN --L1-fhigh 2047.96875 --V1-channel V1:h_16384Hz --V1-fhigh 2047.96875  --V1-flow 20.0 --L1-cache LALSimAdLIGO --L1-timeslide 0 --ifo V1 --ifo L1 --no-detector-frame --Niter ${NSTEPS} &> logging; } 2> runtime &
-cd ..
+    mkdir RUN_${IDX}
+    cd RUN_${IDX}
+    { time lalinference_bench --psdlength 1024 --psdstart 441416535.0 --seglen 32 --srate 4096.0 --trigtime 441417609 --ifo H1 --H1-channel H1:LDAS-STRAIN --H1-cache LALSimAdLIGO --dataseed 1324 --chirpmass-max 6.170374 --chirpmass-min 3.346569 --q-min 0.125 --comp-max 21.9986477179 --comp-min 1.49140053129 --disable-spin --amporder 0 --fref 100 --inj ../../injections.xml --event 0 --H1-timeslide 0 --trigtime 441417609 --psdstart 441416535.0 --tol 1.0 --H1-flow 20.0 --H1-fhigh 2047.96875 --ntemps 8 --np 8 --nsteps 1 --skip 100 --approx IMRPhenomPv2pseudoFourPN --outfile samples.hdf5 --randomseed 1829391048 --L1-flow 20.0 --V1-timeslide 0 --V1-cache LALSimAdVirgo --L1-channel L1:LDAS-STRAIN --L1-fhigh 2047.96875 --V1-channel V1:h_16384Hz --V1-fhigh 2047.96875 --V1-flow 20.0 --L1-cache LALSimAdLIGO --L1-timeslide 0 --ifo V1 --ifo L1 --no-detector-frame --Niter ${NSTEPS} &>logging; } 2>runtime &
+    cd ..
 done
 wait
 
@@ -121,12 +113,9 @@ fp.close()
 
 EOF
 
-
 cd ..
 cd ..
 cd ..
-
-
 
 echo "SUMMARIZING"
 echo
@@ -138,8 +127,7 @@ import sys
 try:
 
     waveform_1 = numpy.loadtxt("waveform_benchmark/TD-wf-bench/benchmark_${1}.dat")[()]
-    waveform_2 = numpy.loadtxt("waveform_benchmark/TD-wf-bench/benchmark_${2}.dat")[()]
-    for val in [waveform_1, waveform_2]:
+    for val in [waveform_1]:
         assert(type(val) == numpy.float64)
         assert(val > 0.)
 except:
@@ -183,7 +171,7 @@ norm_lalinf = 0.00639 / 32
 norm_bilby = 0.00004629629/32.
 norm_pbilby = 0.00003472222/32.
 
-FOM_waveform = max(1./waveform_1, 1./waveform_2) / norm_waveform
+FOM_waveform = (1./waveform_1) / norm_waveform
 FOM_lalinference = lalinference_1 / norm_lalinf
 FOM_bilby = bilby/norm_bilby
 FOM_pbilby = pbilby/norm_pbilby
@@ -204,4 +192,3 @@ with open ('RESULTS.dat', 'w') as fw:
     fw.write(f"FOM_pbilby: {FOM_pbilby}")
 
 EOF
-
