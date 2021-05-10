@@ -136,11 +136,11 @@ except:
     raise
 
 
-try:                                                                                                                                                                                                                                                                
-    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_long.dat")                                                                                                                                                                             
-    assert bilby>0.                                                                                                                                                                                                                                    
-except:                                                                                                                                                                                                                                                     
-    print("CANNOT READ BILBY BENCHMARK. FAILURE")                                                                                                                                                                                                                            
+try:
+    bilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/bilby/bilby_result_long.dat")
+    assert bilby>0.
+except:
+    print("CANNOT READ BILBY BENCHMARK. FAILURE")
 
 print("")
 print ("FINAL BENCHMARK FIGURES FOLLOW")
@@ -149,10 +149,9 @@ print("")
 
 
 
-norm_waveform = 0.000181422351233672 / 32.
-norm_lalinf = 0.00639 / 32
-# bilby runs on 1 core!.
-norm_bilby = 0.00004629629/32.
+norm_waveform = 0.00018465601 / 32.
+norm_lalinf = 0.023192812106970686 / 32
+norm_bilby = 0.0035890028724004986/32.
 
 FOM_waveform = (1./waveform_1) / norm_waveform
 FOM_lalinference = lalinference_1 / norm_lalinf
