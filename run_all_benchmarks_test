@@ -5,8 +5,7 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate igwn-py38-proposed
 
 export HDF5_USE_FILE_LOCKING='FALSE'
-#source /usr/local/bin/conda.sh
-#conda activate igwn-py37
+
 if [ -z "${1}" ]; then
     echo "Must supply number of physical cores"
     exit 1
@@ -47,12 +46,6 @@ bash run_short_benchmark.sh $1
 cd ..
 echo "Done running bilby benchmark"
 
-cd parallel_bilby
-echo "Setting up the parallel bilby benchmark"
-echo "Running parallel bilby benchmark on ${1} cores"
-bash run_short_benchmark.sh $1
-echo "Done running parallel bilby benchmark"
-cd ..
 
 cd ..
 
@@ -144,11 +137,6 @@ try:
 except:
     print("CANNOT READ BILBY BENCHMARK. FAILURE")
 
-
-try:                                                                                                                                                                                                                                                                           
-    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_short.dat")
-    assert pbilby>0.
-except:                                                                                                                                                                                                                                                                           print("CANNOT READ PARALLEL BILBY BENCHMARK. FAILURE") 
 
 print("")
 print("TEST BENCHMARK RUN RAN SUCCESSFULLY!")

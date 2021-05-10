@@ -49,14 +49,6 @@ cd bilby
 bash run_long_benchmark.sh $1
 cd ..
 echo "Done running bilby benchmark"
-
-# Parallel bilby
-cd parallel_bilby
-echo "Setting up the parallel bilby benchmark"
-echo "Running parallel bilby benchmark on ${1} cores"
-bash run_long_benchmark.sh $1
-echo "Done running parallel bilby benchmark"
-cd ..
 cd ..
 
 # LALInference
@@ -150,14 +142,6 @@ try:
 except:                                                                                                                                                                                                                                                     
     print("CANNOT READ BILBY BENCHMARK. FAILURE")                                                                                                                                                                                                                            
 
-try:                                                                                                                                                                                                                                                               
-    pbilby = numpy.loadtxt("PE_benchmarks/bilby_benchmarks/parallel_bilby/pbilby_result_long.dat")                                                                                                                                                               
-    assert pbilby>0.                                                                                                                                                                                                                                           
-except:                                                                                                                                                                                                                                                                      
-     print("CANNOT READ PARALLEL BILBY BENCHMARK. FAILURE") 
-
-
-
 print("")
 print ("FINAL BENCHMARK FIGURES FOLLOW")
 print("")
@@ -169,18 +153,15 @@ norm_waveform = 0.000181422351233672 / 32.
 norm_lalinf = 0.00639 / 32
 # bilby runs on 1 core!.
 norm_bilby = 0.00004629629/32.
-norm_pbilby = 0.00003472222/32.
 
 FOM_waveform = (1./waveform_1) / norm_waveform
 FOM_lalinference = lalinference_1 / norm_lalinf
 FOM_bilby = bilby/norm_bilby
-FOM_pbilby = pbilby/norm_pbilby
 
 
 print("FOM_waveform", FOM_waveform)
 print("FOM_lalinference", FOM_lalinference)
 print("FOM_bilby",FOM_bilby)
-print("FOM_pbilby",FOM_pbilby)
 print("")
 print("Also writing figures to RESULTS.dat")
 
@@ -189,6 +170,5 @@ with open ('RESULTS.dat', 'w') as fw:
     fw.write(f"FOM_waveform: {FOM_waveform}")
     fw.write(f"FOM_lalinference: {FOM_lalinference}")
     fw.write(f"FOM_bilby: {FOM_bilby}")
-    fw.write(f"FOM_pbilby: {FOM_pbilby}")
 
 EOF
