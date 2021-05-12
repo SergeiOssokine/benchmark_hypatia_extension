@@ -171,3 +171,5 @@ with open ('RESULTS.dat', 'w') as fw:
     fw.write(f"FOM_bilby: {FOM_bilby}")
 
 EOF
+
+echo $1 > CPU_cores.dat
