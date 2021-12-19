@@ -19,7 +19,8 @@ cd waveform_benchmark
 
 echo "Setting up waveform benchmark"
 mkdir log
-git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2>log/gitclone.log
+#git clone https://git.ligo.org/serguei.ossokine/TD-wf-bench.git 2>log/gitclone.log
+cp -r /usr/local/TD-wf-bench ./
 cd TD-wf-bench
 # REMOVE THIS LINE
 mv cfgs_vsmall.dat cfgs_small.dat
@@ -36,7 +37,8 @@ mkdir log
 
 # SETUP for bilby benchmark
 
-git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git >log/git_clone.log
+#git clone https://git.ligo.org/serguei.ossokine/bilby_benchmarks.git >log/git_clone.log
+cp -r /usr/local/bilby_benchmarks ./
 cd bilby_benchmarks
 echo $(pwd)
 
